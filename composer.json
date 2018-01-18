@@ -1,14 +1,11 @@
 {
     "name": "galek/collections",
     "type": "project",
-    "license": [
-        "MIT",
-        "GPL-3"
-    ],
+    "license": ["MIT","GPL-3.0"],
     "authors": [
         {
-            "name": "Jan Galek",
-            "email": "admin@gcore.cz"
+          "name": "Jan Galek",
+          "email": "admin@gcore.cz"
         }
     ],
     "minimum-stability": "stable",
