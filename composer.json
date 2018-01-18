@@ -1,6 +1,6 @@
 {
     "name": "galek/collections",
-    "type": "project",
+    "type": "library",
     "license": ["MIT","GPL-3.0"],
     "authors": [
         {
