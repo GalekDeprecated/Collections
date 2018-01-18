@@ -105,6 +105,12 @@ class Collection implements \IteratorAggregate, \Countable, \JsonSerializable, \
 	}
 
 
+	public function reduce(callable $callback, $initial = null)
+	{
+		return array_reduce($this->list, $callback, $initial);
+	}
+
+
 	public function take(int $limit)
 	{
 		if ($limit < 0) {
@@ -183,6 +189,38 @@ class Collection implements \IteratorAggregate, \Countable, \JsonSerializable, \
 	}
 
 
+	public function sum($callback = null)
+	{
+		if (null === $callback) {
+			return array_sum($this->list);
+		}
+
+		$callback = $this->valueRetriever($callback);
+
+		return $this->reduce(function($result, $item) use ($callback) {
+			return $result + $callback($item);
+		}, 0);
+	}
+
+
+	protected function valueRetriever($value)
+	{
+		if ($this->useAsCallable($value)) {
+			return $value;
+		}
+
+		return function ($item) use ($value) {
+			return $this->dataGet($item, $value);
+		};
+	}
+
+
+	protected function useAsCallable($value)
+	{
+		return !\is_string($value) && \is_callable($value);
+	}
+
+
 	/**
 	 * @inheritdoc
 	 */
@@ -247,5 +285,33 @@ class Collection implements \IteratorAggregate, \Countable, \JsonSerializable, \
 	public function offsetUnset($key)
 	{
 		unset($this->list[$key]);
+	}
+
+
+	protected function dataGet($target, $key, $default = null)
+	{
+		if (null === $key) {
+			return $target;
+		}
+		$key = \is_array($key) ? $key : explode('.', $key);
+		while (! is_null($segment = array_shift($key))) {
+			if ($segment === '*') {
+				if ($target instanceof Collection) {
+					$target = $target->all();
+				} elseif (! \is_array($target)) {
+					return value($default);
+				}
+				$result = Arr::pluck($target, $key);
+				return \in_array('*', $key) ? Arr::collapse($result) : $result;
+			}
+			if (Arr::accessible($target) && Arr::exists($target, $segment)) {
+				$target = $target[$segment];
+			} elseif (\is_object($target) && isset($target->{$segment})) {
+				$target = $target->{$segment};
+			} else {
+				return value($default);
+			}
+		}
+		return $target;
 	}
 }
