@@ -17,9 +17,11 @@ class Collection implements \IteratorAggregate, \Countable, \JsonSerializable, \
 	protected $list;
 
 
-	public function __construct(array $items)
+	public function __construct(array $items = null)
 	{
-		$this->collect($items);
+		if (null !== $items) {
+			$this->collect($items);
+		}
 	}
 
 
