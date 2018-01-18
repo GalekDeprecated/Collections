@@ -1,7 +1,10 @@
 {
     "name": "galek/collections",
     "type": "project",
-    "license": "MIT, GPL-3",
+    "license": [
+        "MIT",
+        "GPL-3"
+    ],
     "authors": [
         {
             "name": "Jan Galek",
